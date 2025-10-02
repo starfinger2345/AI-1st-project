@@ -33,6 +33,16 @@ class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
     update_text_signal = pyqtSignal(str)
 
+<<<<<<< HEAD
+    def __init__(self, model, encoder):
+        super().__init__()
+        self._run_flag = True
+        self.model = model
+        self.encoder = encoder
+        self.last_rec_time = 0
+        self.rec_cool_time = 3.0
+        self.display_duration = 3.0
+=======
     def __init__(self, sl_model_instance): # SignLanguageModel 객체를 통째로 수신
     #def __init__(self, model, encoder):
         super().__init__()
@@ -44,6 +54,7 @@ class VideoThread(QThread):
         self.last_rec_time = 0
         self.rec_cool_time = rec_cool_time
         self.display_duration = display_duration
+>>>>>>> 4fd72e792e73eb21ea5c805b6dde8a2f893629c4
         self.cap = cv2.VideoCapture(0)
         self._is_paused = False # <<< 추가: 일시정지 상태 플래그
 
@@ -83,12 +94,14 @@ class VideoThread(QThread):
                     # (이하 특징 추출 로직은 동일)
                     init_zeros = {'angles': np.zeros(15), 'coords': np.zeros(60), 'distances': np.zeros(4), 'orientation': np.zeros(6)}
                     lh_features, rh_features = init_zeros.copy(), init_zeros.copy()
-                    
                     for i, hand_landmarks in enumerate(result.multi_hand_landmarks):
                         
                         handedness = result.multi_handedness[i].classification[0].label
                         
                         joint = np.array([[lm.x, lm.y, lm.z] for lm in hand_landmarks.landmark])
+<<<<<<< HEAD
+                        features = {'angles': calculate_angles(joint),'coords': (joint[1:]-joint[0]).flatten(),'distances': calculate_distances(joint),'orientation': calculate_orientation_vectors(joint)}
+=======
                         
                         features = {
                             'angles': FeatureExtractor.calculate_angles(joint),
@@ -97,10 +110,17 @@ class VideoThread(QThread):
                             'orientation': FeatureExtractor.calculate_orientation_vectors(joint)
                         }
                         
+>>>>>>> 4fd72e792e73eb21ea5c805b6dde8a2f893629c4
                         if handedness == "Left": lh_features = features
                         elif handedness == "Right": rh_features = features
                         
                         mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+<<<<<<< HEAD
+                    feature_vector = np.concatenate([lh_features['angles'], rh_features['angles'],lh_features['coords'], rh_features['coords'],lh_features['distances'], rh_features['distances'],lh_features['orientation'], rh_features['orientation']]).reshape(1, -1)
+                    predicted_label = self.encoder.inverse_transform(self.model.predict(feature_vector))[0]
+                    history.append(predicted_label)
+                    
+=======
                     
                     # 정보를 1차원 배열로 변환
                     feature_vector = np.concatenate([
@@ -110,6 +130,7 @@ class VideoThread(QThread):
                         lh_features['orientation'], rh_features['orientation']
                     ]).reshape(1, -1)
 
+>>>>>>> 4fd72e792e73eb21ea5c805b6dde8a2f893629c4
                     # SignLanguageModel 객체로 예측 수행
                     #predicted_label = self.encoder.inverse_transform(self.model.predict(feature_vector))[0]
                     predicted_label = self.sl_model.predict(feature_vector)
@@ -117,6 +138,12 @@ class VideoThread(QThread):
                     history.append(predicted_label)
 
                     if len(history) == 5 and len(set(history)) == 1:
+<<<<<<< HEAD
+                        if current_time - self.last_rec_time > self.rec_cool_time:
+                            mapped_label = history[-1]
+                            self.update_text_signal.emit(mapped_label)
+                            display_label, display_start_time, self.last_rec_time = mapped_label, current_time, current_time
+=======
                         
                         # 레이블 인식 및 쿨타임 타이머 작동
                         if current_time - self.last_rec_time > self.rec_cool_time:
@@ -132,6 +159,7 @@ class VideoThread(QThread):
                             display_label = mapped_label
                             display_start_time = current_time
                             self.last_rec_time = current_time # 마지막 인식 시간 업데이
+>>>>>>> 4fd72e792e73eb21ea5c805b6dde8a2f893629c4
                             history.clear()
                 
                 if hands_present:
@@ -178,6 +206,17 @@ class SettingsWindow(QDialog):
         selected_speed = self.speed_combo.currentData(); self.speed_changed.emit(selected_speed); self.accept()
 
 class SignLanguageTranslatorApp(QWidget):
+<<<<<<< HEAD
+    def __init__(self, model, encoder):
+        super().__init__()
+        self.setWindowTitle("수어 번역 프로그램")
+        self.current_rec_speed = 3.0 
+        self.is_paused = False # <<< 추가: 일시정지 상태 플래그
+
+        # --- UI 위젯 생성 ---
+        self.camera_view = QLabel(self); self.camera_view.setObjectName("cameraView"); self.camera_view.setMinimumSize(600, 480)
+        self.pause_button = QPushButton("일시정지") # <<< 추가: 일시정지 버튼 생성
+=======
     def __init__(self, sl_model):
         super().__init__()
         self.setWindowTitle("수어 번역 프로그램")
@@ -187,6 +226,7 @@ class SignLanguageTranslatorApp(QWidget):
         # --- UI 위젯 생성 ---
         self.camera_view = QLabel(self); self.camera_view.setObjectName("cameraView"); self.camera_view.setMinimumSize(600, 480)
         self.pause_button = QPushButton("일시정지")
+>>>>>>> 4fd72e792e73eb21ea5c805b6dde8a2f893629c4
         self.settings_button = QPushButton("설정")
         self.help_button = QPushButton("도움말")
         self.log_box = QPlainTextEdit(self); self.log_box.setReadOnly(True)
@@ -207,7 +247,11 @@ class SignLanguageTranslatorApp(QWidget):
         
         # --- 레이아웃 설정 ---
         button_layout = QHBoxLayout(); button_layout.addStretch(1)
+<<<<<<< HEAD
+        button_layout.addWidget(self.pause_button) # <<< 추가: 레이아웃에 일시정지 버튼 추가
+=======
         button_layout.addWidget(self.pause_button)
+>>>>>>> 4fd72e792e73eb21ea5c805b6dde8a2f893629c4
         button_layout.addWidget(self.settings_button); button_layout.addWidget(self.help_button)
         right_pane_layout = QVBoxLayout(); right_pane_layout.addLayout(button_layout); right_pane_layout.addWidget(self.log_box, stretch=10); right_pane_layout.addWidget(self.bottom_input, stretch=1)
         right_widget = QWidget(); right_widget.setLayout(right_pane_layout); right_widget.setFixedWidth(350)
@@ -215,7 +259,11 @@ class SignLanguageTranslatorApp(QWidget):
         self.setLayout(main_layout); self.resize(980, 520)
 
         # --- 시그널과 슬롯 연결 ---
+<<<<<<< HEAD
+        self.pause_button.clicked.connect(self.toggle_pause_resume) # <<< 추가: 일시정지 버튼 클릭 시그널 연결
+=======
         self.pause_button.clicked.connect(self.toggle_pause_resume)
+>>>>>>> 4fd72e792e73eb21ea5c805b6dde8a2f893629c4
         self.help_button.clicked.connect(self.toggle_help_window)
         self.settings_button.clicked.connect(self.open_settings_window)
         self.bottom_input.returnPressed.connect(self.finalize_sentence)
@@ -223,7 +271,11 @@ class SignLanguageTranslatorApp(QWidget):
         # --- 기타 초기화 ---
         self.help_window, self.settings_window = None, None
         self.assembler = HangulAssembler()
+<<<<<<< HEAD
+        self.thread = VideoThread(model, encoder)
+=======
         self.thread = VideoThread(sl_model)
+>>>>>>> 4fd72e792e73eb21ea5c805b6dde8a2f893629c4
         self.thread.change_pixmap_signal.connect(self.update_image)
         self.thread.update_text_signal.connect(self.update_text)
         self.thread.start()
@@ -233,6 +285,9 @@ class SignLanguageTranslatorApp(QWidget):
         self.help_shortcut = QShortcut(QKeySequence(Qt.Key_F1), self); self.help_shortcut.activated.connect(self.toggle_help_window)
 
         # 윈도우 아이콘
+<<<<<<< HEAD
+        self.setWindowIcon(QIcon("세종머왕.png"))  # 윈도우 좌측 상단 아이콘
+=======
         self.setWindowIcon(QIcon("data/세종머왕.png"))  # 윈도우 좌측 상단 아이콘
     
     # --- 일시정지/재시작 토글 메서드 ---
@@ -295,10 +350,76 @@ class SignLanguageTranslatorApp(QWidget):
 if __name__ == "__main__":
     # 1. SignLanguageModel 클래스를 사용해 저장된 모델 로드
     sl_model = SignLanguageModel.load()
+>>>>>>> 4fd72e792e73eb21ea5c805b6dde8a2f893629c4
     
-    if sl_model:
-        # 2. GUI 앱 실행, 로드된 모델 객체 전달
+    # <<< 추가: 일시정지/재시작 토글 메서드 >>>
+    def toggle_pause_resume(self):
+        self.is_paused = not self.is_paused
+        if self.is_paused:
+            self.thread.pause()
+            self.pause_button.setText("다시 시작")
+        else:
+            self.thread.resume()
+            self.pause_button.setText("일시정지")
+
+    def open_settings_window(self):
+        if self.settings_window is None or not self.settings_window.isVisible():
+            self.settings_window = SettingsWindow(self.current_rec_speed, self)
+            self.settings_window.speed_changed.connect(self.update_recognition_speed)
+            self.settings_window.show()
+        else:
+            self.settings_window.activateWindow()
+
+    def update_recognition_speed(self, new_speed):
+        self.current_rec_speed = new_speed; self.thread.rec_cool_time = new_speed; self.thread.display_duration = new_speed
+        print(f"인식 속도가 {new_speed}초로 변경되었습니다.")
+
+    def finalize_sentence(self):
+        text = self.bottom_input.text()
+        if text: self.log_box.appendPlainText(text)
+        self.bottom_input.clear(); self.assembler = HangulAssembler()
+        
+    def update_text(self, new_char):
+        if new_char == 'end':
+            text_to_send = self.assembler.get_current_text_and_reset()
+            if text_to_send:
+                self.log_box.appendPlainText(text_to_send)
+            self.bottom_input.clear()
+            return
+        current_text = self.assembler.add_char(new_char)
+        self.bottom_input.setText(current_text)
+        
+    def toggle_help_window(self):
+        if self.help_window is None or not self.help_window.isVisible():
+            self.help_window = HelpWindow(self); self.help_window.setModal(False)
+            self.help_window.move(self.frameGeometry().topRight() + QPoint(10, 0)); self.help_window.show()
+        else:
+            self.help_window.close()
+            
+    def update_image(self, cv_img):
+        qt_img = self.convert_cv_qt(cv_img); self.camera_view.setPixmap(qt_img)
+        
+    def convert_cv_qt(self, cv_img):
+        rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB); h, w, ch = rgb_image.shape; p = QPixmap.fromImage(QImage(rgb_image.data, w, h, ch * w, QImage.Format_RGB888))
+        return p.scaled(self.camera_view.width(), self.camera_view.height(), Qt.KeepAspectRatio)
+        
+    def closeEvent(self, event):
+        if self.help_window and self.help_window.isVisible(): self.help_window.close()
+        if self.settings_window and self.settings_window.isVisible(): self.settings_window.close()
+        self.thread.stop(); event.accept(); cv2.destroyAllWindows(); cv2.waitKey(1)
+
+# ======================= PART 03. 메인 실행 부분 =======================
+if __name__ == "__main__":
+    trained_model, label_encoder = train_model(dataset_file)
+    if trained_model and label_encoder:
         app = QApplication(sys.argv)
+<<<<<<< HEAD
+        window = SignLanguageTranslatorApp(trained_model, label_encoder)
+        window.show()
+        sys.exit(app.exec_())
+    else:
+        print("모델 학습에 실패하여 프로그램을 종료합니다.")
+=======
         window = SignLanguageTranslatorApp(sl_model)
         window.show()
         sys.exit(app.exec_())
@@ -318,3 +439,4 @@ if __name__ == "__main__":
         print("모델 학습에 실패하여 프로그램을 종료합니다.")
 
 '''
+>>>>>>> 4fd72e792e73eb21ea5c805b6dde8a2f893629c4
