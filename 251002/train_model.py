@@ -1,4 +1,4 @@
-from manage_model_test import SignLanguageModel
+from manage_model import SignLanguageModel
 
 if __name__ == "__main__":
     # 1. 모델 객체 생성

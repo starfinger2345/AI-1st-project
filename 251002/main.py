@@ -20,11 +20,11 @@ mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 
 # ---직접 만든 모듈에서 클래스와 함수 로드---
-from manage_model_test import SignLanguageModel, FeatureExtractor
-from hangul_processor_test import HangulAssembler
+from manage_model import SignLanguageModel, FeatureExtractor
+from hangul_processor import HangulAssembler
 from settings import font_path, rec_cool_time, history_maxlen, display_duration
 
-from hangul_processor_test import putText_korean
+from hangul_processor import putText_korean
 
 
 # ======================= PyQt5 GUI 및 영상 처리 스레드 =======================

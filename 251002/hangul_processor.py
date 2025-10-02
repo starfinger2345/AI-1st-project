@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 import cv2
 import numpy as np
 
-from data.dictionary_kr import (
+from dictionary_kr import (
                     first_spelling, second_spelling, last_spelling,
                     start_kr, end_kr,
                     consonant_labels, vowel_labels, command_labels
