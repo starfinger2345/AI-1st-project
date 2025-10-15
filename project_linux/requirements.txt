@@ -1,9 +1,0 @@
-# === 필수 라이브러리 ===
-opencv-python 
-mediapipe     
-PyQt5         
-scikit-learn  
-numpy         
-pillow        
-gtts          
-joblib        

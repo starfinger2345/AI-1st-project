@@ -1,9 +1,0 @@
-# === 필수 라이브러리 ===
-opencv-python # 영상처리
-mediapipe     # 손 랜드마크 추출
-PyQt5         # GUI 프레임워크
-scikit-learn  # ML 모델
-numpy         # 수치 연산
-pillow        # 이미지 처리 (PIL)
-gtts          # 구글 TTS
-joblib        # 모델 저장/불러오기
